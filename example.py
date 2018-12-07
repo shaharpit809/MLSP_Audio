@@ -176,7 +176,7 @@ mfcc_delta_second_order = librosa.feature.delta(mfcc,order=2)
 temp = librosa.feature.delta(mfcc_delta)
 inter = np.vstack((mfcc,mfcc_delta,mfcc_delta_second_order))
 ubm_feature = inter.T
-ubm_feature = preprocessing.scale(ubm_feature)
+#ubm_feature = preprocessing.scale(ubm_feature)
 print(ubm_feature)
 print(np.shape(ubm_feature))
 print(np.shape(mfcc_delta_second_order))
@@ -279,16 +279,16 @@ for i in range(c):
     temp_mfcc_delta_second_order = librosa.feature.delta(temp_mfcc,order=2)
     temp_inter = np.vstack((temp_mfcc,temp_mfcc_delta,temp_mfcc_delta_second_order))
     temp_gmm_feature = temp_inter.T
-    data = preprocessing.scale(temp_gmm_feature)
+    #data = preprocessing.scale(temp_gmm_feature)
 
     print("shape of data")
-    print(np.shape(data))
+    print(np.shape(temp_gmm_feature))
     gmm  = deepcopy(ubm_model)
 
-    gmm = MAP_Estimation(gmm,data,m_iterations =1)
+    gmm = MAP_Estimation(gmm,temp_gmm_feature,m_iterations =1)
     
     sv = gmm.means_.flatten()
-    sv = preprocessing.scale(sv)
+    #sv = preprocessing.scale(sv)
     Total.append(sv)
 
 print(np.shape(Total))
