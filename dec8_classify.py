@@ -22,7 +22,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import classification_report
 
 
-path_data = '/home/flash/Documents/IUBBooks/MLSP/Prooject/RAVDESS/Data'
+path_data = 'D:/MLSP Project/Data/Data'
 
 #f,sr = librosa.load('/home/flash/Documents/IUBBooks/MLSP/Prooject/RAVDESS/Data/04/03-01-04-01-01-01-13.wav')
 
@@ -107,9 +107,9 @@ import pickle
 #pickle.dump(feature_all,feature_file)
 #label_file = open('/home/flash/Documents/IUBBooks/MLSP/Prooject/RAVDESS/dec8/label.pkl','wb')
 #pickle.dump(labels,label_file)
-f2 = open('/home/flash/Documents/IUBBooks/MLSP/Prooject/RAVDESS/dec8/feature.pkl','rb')
+f2 = open('feature.pkl','rb')
 feature_all = pickle.load(f2)
-f3 = open('/home/flash/Documents/IUBBooks/MLSP/Prooject/RAVDESS/dec8/label.pkl','rb')
+f3 = open('label.pkl','rb')
 labels = pickle.load(f3)
 from copy import deepcopy
 y = deepcopy(labels)
@@ -159,3 +159,43 @@ model.fit(X_train,y_train,nb_epoch=200,batch_size = 5,verbose=1)
 
 
 model.evaluate(X_test,y_test)
+
+mlp_model = model.to_json()
+with open('mlp_model_relu_adadelta.json','w') as j:
+    j.write(mlp_model)
+model.save_weights("mlp_relu_adadelta_model.h5")
+
+
+# json_file = open('model.json', 'r')
+# loaded_model_json = json_file.read()
+# json_file.close()
+# loaded_model = model_from_json(loaded_model_json)
+# # load weights into new model
+# loaded_model.load_weights("model.h5")
+
+model2 = Sequential()
+
+model2.add(Dense(X_train.shape[1],input_dim =X_train.shape[1],init='normal',activation ='relu'))
+
+model2.add(Dense(400,init='normal',activation ='tanh'))
+
+model2.add(Dropout(0.2))
+
+model2.add(Dense(200,init='normal',activation ='tanh'))
+
+model2.add(Dropout(0.2))
+
+model2.add(Dense(100,init='normal',activation ='sigmoid'))
+
+model2.add(Dropout(0.2))
+
+model2.add(Dense(y_train.shape[1],init='normal',activation ='softmax'))
+
+model2.compile(loss = 'categorical_crossentropy',optimizer='adadelta',metrics=['accuracy'])
+
+model2.fit(X_train,y_train,nb_epoch=200,batch_size = 5,verbose=1)
+
+mlp_model2 = model2.to_json()
+with open('mlp_model_tanh_adadelta.json','w') as j:
+    j.write(mlp_model2)
+model2.save_weights("mlp_tanh_adadelta_model.h5")
