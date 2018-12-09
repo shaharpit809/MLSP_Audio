@@ -27,7 +27,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Activation,Dropout, Flatten, Embedding
 
 
-path_data = 'D:/MLSP Project/Data/Data'
+path_data = '/home/flash/Documents/IUBBooks/MLSP/Prooject/RAVDESS/Data'
 
 #f,sr = librosa.load('/home/flash/Documents/IUBBooks/MLSP/Prooject/RAVDESS/Data/04/03-01-04-01-01-01-13.wav')
 
@@ -42,6 +42,7 @@ data = []
 max_fs = 0
 labels = []
 
+emotions = ['neutral','calm','happy','sad','angry','fearful','disgust','surprised']
 directories = os.listdir(path_data)
 
 print(directories)
@@ -71,41 +72,42 @@ print(directories)
 #me = []
 #co = []
 #to =[]
-#feature_all=np.empty((0,193))
-#for d in directories:
-#    for file in os.listdir(os.path.join(path_data,d)):
-#        #X,sr = librosa.load('/home/flash/Documents/IUBBooks/MLSP/Prooject/RAVDESS/Data/01/03-01-01-01-01-01-01.wav',sr = None)
-#        X,sr = librosa.load(os.path.join(path_data,d,file),duration=3)
-#        stft = np.abs(librosa.stft(X))
-#        #print("stft shape: ", np.shape(stft))
-#        #s.append(np.shape(stft))
-#        mfccs = np.mean(librosa.feature.mfcc(y=X, sr=sr, n_mfcc=40).T,axis=0)
-#        #mfccs=mfccs.reshape(1,np.shape(mfccs)[0])
-#        #print("mfccs shape: ", np.shape(mfccs))
-#        #m.append(np.shape(mfccs))
-#        chroma = np.mean(librosa.feature.chroma_stft(S=stft, sr=sr).T,axis=0)
-#        #chroma = chroma.reshape(1,np.shape(chroma)[0])
-#        #print("chroma shape: " , np.shape(chroma))
-#        #c.append(np.shape(chroma))
-#        mel = np.mean(librosa.feature.melspectrogram(X, sr=sr).T,axis=0)
-#       # mel = mel.reshape(1,np.shape(mel)[0])
-#        #print("mel shape:" , np.shape(mel))
-#        #me.append(np.shape(mel))
-#        contrast = np.mean(librosa.feature.spectral_contrast(S=stft, sr=sr).T,axis=0)
-#        #contrast = contrast.reshape(1,np.shape(contrast)[0])
-#        #print("contrast shape:",np.shape(contrast))
-#        #co.append(np.shape(contrast))
-#        tonnetz = np.mean(librosa.feature.tonnetz(y=librosa.effects.harmonic(X),sr=sr).T,axis=0)
-#        #tonnetz = tonnetz.reshape(1,np.shape(tonnetz)[0])
-#        
-#        #print("tonnetz shape:",np.shape(tonnetz))
-#        #to.append(np.shape(tonnetz))
-#        features = np.hstack([mfccs,chroma,mel,contrast,tonnetz])
-#        #features = features.reshape(np.shape(features)[0],1)
-#        feature_all = np.vstack([feature_all,features])
-#        labels.append(d)
-#        #print(feature.shape)
-#
+'''
+feature_all=np.empty((0,193))
+for d in directories:
+    for file in os.listdir(os.path.join(path_data,d)):
+        #X,sr = librosa.load('/home/flash/Documents/IUBBooks/MLSP/Prooject/RAVDESS/Data/01/03-01-01-01-01-01-01.wav',sr = None)
+        X,sr = librosa.load(os.path.join(path_data,d,file),duration=3)
+        stft = np.abs(librosa.stft(X))
+        #print("stft shape: ", np.shape(stft))
+        #s.append(np.shape(stft))
+        mfccs = np.mean(librosa.feature.mfcc(y=X, sr=sr, n_mfcc=40).T,axis=0)
+        #mfccs=mfccs.reshape(1,np.shape(mfccs)[0])
+        #print("mfccs shape: ", np.shape(mfccs))
+        #m.append(np.shape(mfccs))
+        chroma = np.mean(librosa.feature.chroma_stft(S=stft, sr=sr).T,axis=0)
+        #chroma = chroma.reshape(1,np.shape(chroma)[0])
+        #print("chroma shape: " , np.shape(chroma))
+        #c.append(np.shape(chroma))
+        mel = np.mean(librosa.feature.melspectrogram(X, sr=sr).T,axis=0)
+       # mel = mel.reshape(1,np.shape(mel)[0])
+        #print("mel shape:" , np.shape(mel))
+        #me.append(np.shape(mel))
+        contrast = np.mean(librosa.feature.spectral_contrast(S=stft, sr=sr).T,axis=0)
+        #contrast = contrast.reshape(1,np.shape(contrast)[0])
+        #print("contrast shape:",np.shape(contrast))
+        #co.append(np.shape(contrast))
+        tonnetz = np.mean(librosa.feature.tonnetz(y=librosa.effects.harmonic(X),sr=sr).T,axis=0)
+        #tonnetz = tonnetz.reshape(1,np.shape(tonnetz)[0])
+        
+        #print("tonnetz shape:",np.shape(tonnetz))
+        #to.append(np.shape(tonnetz))
+        features = np.hstack([mfccs,chroma,mel,contrast,tonnetz])
+        #features = features.reshape(np.shape(features)[0],1)
+        feature_all = np.vstack([feature_all,features])
+        labels.append(d)
+        #print(feature.shape)
+'''
 #
 import pickle
 #feature_file = open('/home/flash/Documents/IUBBooks/MLSP/Prooject/RAVDESS/dec8/feature.pkl','wb')
@@ -225,11 +227,14 @@ count = 0
 for i in range(y22.shape[0]):
     if y22[i] == y_test22[i]:
         count+=1
-X_train2,X_test2,y_train2,y_test2 = train_test_split(feature_all,one_hot_encode,test_size = 0.3,random_state=20)        
+        
 from xgboost import XGBClassifier
-model3 = XGBClassifier()
-model3.fit(X_train2,y_train2[:,0])
+X_train2,X_test2,y_train2,y_test2 = train_test_split(feature_all,y,test_size = 0.3,random_state=20)        
 
+model3 = XGBClassifier()
+model3.fit(X_train2,y_train2)
+model3.evals_result()
+cross_val_score(model3, X_train2, y_train2, cv=5)
 y_pred3 = model3.predict(X_test)
 
 count = 0
@@ -244,19 +249,55 @@ for i in range(y_pred3.shape[0]):
 # y_pred = clf.predict(X_test)
 # for i in range(np.shape(y_test))
         
-        
-        
-#LSTM
-xt = deepcopy(X_train)    
-X_train2 = np.reshape(X_train, (X_train.shape[0], 1, X_train.shape[1]))
-y_train2 = np.reshape(y_train, (y_train.shape[0], 1, y_train.shape[1]))      
-#n_timesteps = 194544
-model3 = Sequential()
-model3.add(Embedding(2000, 128, input_length=X_train.shape[1], dropout = 0.2))
-model3.add(LSTM(20, input_shape=np.shape(xt)))
-# model3.add(TimeDistributed(Dense(1)))
-# model.add(Flatten())
-model.add(Dense(8, activation='softmax'))
-model3.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['acc'])
+X,sr = librosa.load('/home/flash/Documents/IUBBooks/MLSP/Prooject/MLSP_Audio/chunk-00.wav',sr = None)
+stft = np.abs(librosa.stft(X))
+#print("stft shape: ", np.shape(stft))
 
-model3.fit(X_train, y_train2, epochs=1, batch_size=1, verbose=1)
+mfccs = np.mean(librosa.feature.mfcc(y=X, sr=sr, n_mfcc=40),axis=1)
+
+
+chroma = np.mean(librosa.feature.chroma_stft(S=stft, sr=sr).T,axis=0)
+mel = np.mean(librosa.feature.melspectrogram(X, sr=sr).T,axis=0)
+
+contrast = np.mean(librosa.feature.spectral_contrast(S=stft, sr=sr,fmin=0.5*sr* 2**(-6)).T,axis=0)
+
+tonnetz = np.mean(librosa.feature.tonnetz(y=librosa.effects.harmonic(X),sr=sr*2).T,axis=0)
+features = np.hstack([mfccs,chroma,mel,contrast,tonnetz])
+#features = features.reshape(np.shape(features)[0],1)
+feature_all = np.vstack([feature_all,features])
+
+print(features.shape)
+
+x_chunk = np.array(features)
+x_chunk = x_chunk.reshape(1,np.shape(x_chunk)[0])
+y_chunk_model1 = model.predict(x_chunk)
+index = np.argmax(y_chunk_model1)
+print('Emotion:',emotions[index])
+
+
+feature_all2=np.empty((0,193))
+X2,sr = librosa.load('/home/flash/Documents/IUBBooks/MLSP/Prooject/MLSP_Audio/chunk-02.wav',sr = None)
+stft2 = np.abs(librosa.stft(X2))
+#print("stft shape: ", np.shape(stft))
+
+mfccs2 = np.mean(librosa.feature.mfcc(y=X2, sr=sr, n_mfcc=40),axis=1)
+
+
+chroma2 = np.mean(librosa.feature.chroma_stft(S=stft2, sr=sr).T,axis=0)
+mel2 = np.mean(librosa.feature.melspectrogram(X2, sr=sr).T,axis=0)
+
+contrast2 = np.mean(librosa.feature.spectral_contrast(S=stft2, sr=sr,fmin=0.5*sr* 2**(-6)).T,axis=0)
+
+tonnetz2 = np.mean(librosa.feature.tonnetz(y=librosa.effects.harmonic(X2),sr=sr*2).T,axis=0)
+features2 = np.hstack([mfccs2,chroma2,mel2,contrast2,tonnetz2])
+#features = features.reshape(np.shape(features)[0],1)
+feature_all2 = np.vstack([feature_all2,features2])
+
+print(features2.shape)
+
+x_chunk2 = np.array(features2)
+x_chunk2 = x_chunk2.reshape(1,np.shape(x_chunk2)[0])
+y_chunk2_model1 = model.predict(x_chunk2)
+index2 = np.argmax(y_chunk2_model1)
+print('Emotion:',emotions[index2])
+
